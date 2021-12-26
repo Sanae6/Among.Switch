@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Among.Switch", "Among.Switch\Among.Switch.csproj", "{69C74709-09ED-412A-94F2-42006B9DCA73}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProgram", "TestProgram\TestProgram.csproj", "{CDA303CC-86FF-4864-ACC7-88E0DB75AAB4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{69C74709-09ED-412A-94F2-42006B9DCA73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69C74709-09ED-412A-94F2-42006B9DCA73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69C74709-09ED-412A-94F2-42006B9DCA73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69C74709-09ED-412A-94F2-42006B9DCA73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDA303CC-86FF-4864-ACC7-88E0DB75AAB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDA303CC-86FF-4864-ACC7-88E0DB75AAB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDA303CC-86FF-4864-ACC7-88E0DB75AAB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDA303CC-86FF-4864-ACC7-88E0DB75AAB4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
