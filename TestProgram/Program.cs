@@ -2,6 +2,7 @@
 using Among.Switch;
 using Among.Switch.Bflyt;
 using Among.Switch.Byml;
+using Newtonsoft.Json;
 
 switch (args[0]) {
     case "extract": {
@@ -20,13 +21,16 @@ switch (args[0]) {
     }
     case "byml": {
         BymlFile byml = BymlFile.Load(File.ReadAllBytes(args[1]));
-        Console.WriteLine(byml.Dump());
+        Console.WriteLine(JsonConvert.SerializeObject(byml, Formatting.Indented));
+        // Console.WriteLine(byml.Dump(new DumpOptions {
+        //     DumpStyle = DumpStyle.CSharp,
+        //     MaxLevel = int.MaxValue
+        // }));
         break;
     }
     case "bflyt": {
         BflytFile bflyt = BflytFile.Load(File.ReadAllBytes(args[1]));
         Console.WriteLine(ObjectDumper.Dump(bflyt));
-        Console.WriteLine(ObjectDumper.Dump(typeof(BflytFile)));
         break;
     }
 }

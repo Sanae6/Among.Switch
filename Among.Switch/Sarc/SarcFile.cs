@@ -17,8 +17,8 @@ public class SarcFile {
     private const uint SfatHeaderSize = 0xC;
     private const uint SfntHeaderSize = 0x8;
 
-    public uint HashKey;
-    public readonly Dictionary<string, byte[]> Files = new Dictionary<string, byte[]>();
+    public uint HashKey { get; }
+    public Dictionary<string, byte[]> Files { get; } = new Dictionary<string, byte[]>();
 
     // public SpanBuffer Save(bool bigEndian = false) {
     //     SpanBuffer buffer = new SpanBuffer(new byte[SarcHeaderSize + SfatHeaderSize + Files.Count * FatNode.NodeSize], bigEndian);

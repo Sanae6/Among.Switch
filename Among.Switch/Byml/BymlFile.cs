@@ -19,9 +19,9 @@ public class BymlFile {
         Version = version;
     }
 
-    public StringTableNode Hashes;
-    public StringTableNode Strings;
-    public INode Root;
+    public StringTableNode Hashes { get; set; }
+    public StringTableNode Strings { get; set; }
+    public INode Root { get; set; }
 
     public static BymlFile Load(Span<byte> data) {
         SpanBuffer buffer = new SpanBuffer(data);

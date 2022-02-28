@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
       <PackageReference Include="ObjectDumper.NET" Version="3.3.16-pre" />
     </ItemGroup>
 
