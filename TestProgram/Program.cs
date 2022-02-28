@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Among.Switch;
+using Among.Switch.Bflyt;
 using Among.Switch.Byml;
 
 switch (args[0]) {
@@ -19,7 +20,13 @@ switch (args[0]) {
     }
     case "byml": {
         BymlFile byml = BymlFile.Load(File.ReadAllBytes(args[1]));
-
+        Console.WriteLine(byml.Dump());
+        break;
+    }
+    case "bflyt": {
+        BflytFile bflyt = BflytFile.Load(File.ReadAllBytes(args[1]));
+        Console.WriteLine(ObjectDumper.Dump(bflyt));
+        Console.WriteLine(ObjectDumper.Dump(typeof(BflytFile)));
         break;
     }
 }

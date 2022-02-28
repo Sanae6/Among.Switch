@@ -20,10 +20,10 @@ public class SarcFile {
     public uint HashKey;
     public readonly Dictionary<string, byte[]> Files = new Dictionary<string, byte[]>();
 
-    public SpanBuffer Save(bool bigEndian = false) {
-        SpanBuffer buffer = new SpanBuffer(new byte[SarcHeaderSize + SfatHeaderSize + Files.Count * FatNode.NodeSize], bigEndian);
-        buffer.WriteU32();
-    }
+    // public SpanBuffer Save(bool bigEndian = false) {
+    //     SpanBuffer buffer = new SpanBuffer(new byte[SarcHeaderSize + SfatHeaderSize + Files.Count * FatNode.NodeSize], bigEndian);
+    //     buffer.WriteU32();
+    // }
 
     public static SarcFile Load(Span<byte> data) {
         SpanBuffer buffer = new SpanBuffer(data, true);
@@ -36,11 +36,7 @@ public class SarcFile {
         }
 
         Bookmark headerStart = buffer.BookmarkLocation(sizeof(ushort));
-        buffer.BigEndian = buffer.ReadU16() switch {
-            0xFEFF => true,
-            0xFFFE => false,
-            _ => throw new Exception("Endianness BOM was not valid!")
-        };
+        buffer.SetBom();
 
         headerStart.Toggle(ref buffer);
         if (buffer.ReadU16() != SarcHeaderSize)

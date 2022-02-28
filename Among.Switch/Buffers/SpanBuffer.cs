@@ -155,6 +155,16 @@ public ref struct SpanBuffer {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void WriteRepeatedU8(byte value, int count) {
+        ThrowIfEndOfBuffer(sizeof(byte) * count);
+        int i = 0;
+        while (i < count) {
+            i++;
+            WriteU8(value);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WriteI8(sbyte value) {
         WriteU8(unchecked((byte) value));
     }
@@ -184,7 +194,7 @@ public ref struct SpanBuffer {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void WriteU32(int value) {
+    public void WriteI32(int value) {
         ThrowIfEndOfBuffer(sizeof(int));
         if (BigEndian) BinaryPrimitives.WriteInt32BigEndian(Slice(sizeof(int)), value);
         else BinaryPrimitives.WriteInt32LittleEndian(Slice(sizeof(int)), value);
@@ -205,6 +215,16 @@ public ref struct SpanBuffer {
         if (BigEndian) BinaryPrimitives.WriteUInt64BigEndian(Slice(sizeof(ulong)), value);
         else BinaryPrimitives.WriteUInt64LittleEndian(Slice(sizeof(ulong)), value);
         Offset += sizeof(ulong);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void WriteF32(float value) {
+        WriteI32(BitConverter.SingleToInt32Bits(value));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void WriteF64(double value) {
+        WriteI64(BitConverter.DoubleToInt64Bits(value));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -11,4 +11,8 @@
       <ProjectReference Include="..\Among.Switch\Among.Switch.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="ObjectDumper.NET" Version="3.3.16-pre" />
+    </ItemGroup>
+
 </Project>
