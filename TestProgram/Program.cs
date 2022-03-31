@@ -30,7 +30,7 @@ switch (args[0]) {
     }
     case "bflyt": {
         BflytFile bflyt = BflytFile.Load(File.ReadAllBytes(args[1]));
-        Console.WriteLine(ObjectDumper.Dump(bflyt));
+        Console.WriteLine(JsonConvert.SerializeObject(bflyt));
         break;
     }
 }

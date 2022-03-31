@@ -13,17 +13,22 @@ public class SarcFile {
     private const string SarcMagic = "SARC";
     private const string SfatMagic = "SFAT";
     private const string SfntMagic = "SFNT";
-    private const uint SarcHeaderSize = 0x14;
-    private const uint SfatHeaderSize = 0xC;
-    private const uint SfntHeaderSize = 0x8;
+    private const ushort SarcHeaderSize = 0x14;
+    private const ushort SfatHeaderSize = 0xC;
+    private const ushort SfntHeaderSize = 0x8;
 
     public uint HashKey { get; }
     public Dictionary<string, byte[]> Files { get; } = new Dictionary<string, byte[]>();
 
-    // public SpanBuffer Save(bool bigEndian = false) {
-    //     SpanBuffer buffer = new SpanBuffer(new byte[SarcHeaderSize + SfatHeaderSize + Files.Count * FatNode.NodeSize], bigEndian);
-    //     buffer.WriteU32();
-    // }
+    public SpanBuffer Save(bool compress, bool bigEndian = false) {
+        SpanBuffer buffer = new SpanBuffer(new byte[SarcHeaderSize + SfatHeaderSize + Files.Count * FatNode.NodeSize], bigEndian);
+        buffer.WriteString(SarcMagic);
+        buffer.WriteU16(SarcHeaderSize);
+        buffer.WriteBom();
+
+        
+        return buffer;
+    }
 
     public static SarcFile Load(Span<byte> data) {
         SpanBuffer buffer = new SpanBuffer(data, true);

@@ -1,13 +1,16 @@
 ﻿using System;
 using Among.Switch.Buffers;
 
-namespace Among.Switch.Util; 
+namespace Among.Switch.Util;
 
-public static class BomSetter {
+public static class BufferBom {
     public static void SetBom(this ref SpanBuffer buffer) =>
         buffer.BigEndian = buffer.ReadU16() switch {
             0xFEFF => false,
             0xFFFE => true,
             _ => throw new Exception("Endianness BOM was not valid!")
         };
+
+    public static void WriteBom(this ref SpanBuffer buffer) =>
+        buffer.WriteU16((ushort) (buffer.BigEndian ? 0xFFFE : 0xFEFF));
 }
