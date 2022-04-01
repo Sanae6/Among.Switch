@@ -7,7 +7,7 @@ using System.Text;
 using Among.Switch.Buffers;
 using Among.Switch.Util;
 
-namespace Among.Switch; 
+namespace Among.Switch;
 
 public class SarcFile {
     private const string SarcMagic = "SARC";
@@ -26,7 +26,7 @@ public class SarcFile {
         buffer.WriteU16(SarcHeaderSize);
         buffer.WriteBom();
 
-        
+
         return buffer;
     }
 
@@ -48,7 +48,7 @@ public class SarcFile {
             throw new Exception($"SARC header length was not 0x{SarcHeaderSize:X}");
         headerStart.Toggle(ref buffer);
         _ = buffer.ReadU32();
-        Bookmark dataStart = new Bookmark {Offset = (int) buffer.ReadU32()};
+        Bookmark dataStart = new Bookmark((int) buffer.ReadU32());
         _ = buffer.ReadU32();
         if (buffer.ReadString(4) != SfatMagic) throw new Exception("Could not find SFAT magic in SARC data");
         Dictionary<uint, FatNode> hashMap = new Dictionary<uint, FatNode>();
@@ -69,7 +69,7 @@ public class SarcFile {
         for (int i = 0; i < nodeCount; i++) {
             string str = buffer.ReadStringNull();
             FatNode node = hashMap[Hash(str, hashKey)];
-            sarc.Files[str] = buffer[(int)(dataStart + node.Start)..(int)(dataStart + node.End)].ToArray();
+            sarc.Files[str] = buffer[(int) (dataStart + node.Start)..(int) (dataStart + node.End)].ToArray();
             buffer.Align4();
         }
 

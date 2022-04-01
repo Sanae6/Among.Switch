@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 switch (args[0]) {
     case "extract": {
         SarcFile sarc = SarcFile.Load(File.ReadAllBytes(args[1]));
-        string dirName = Path.GetFileName(args[1]) + " Files";
+        string dirName = Path.GetFileName(args[1]) + "_Files";
         Directory.CreateDirectory(dirName);
         foreach ((string? key, byte[]? data) in sarc.Files) {
             Debug.WriteLine($"Writing {key}");

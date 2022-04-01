@@ -6,6 +6,11 @@ public struct Bookmark {
     public int Offset;
     public int Size;
 
+    public Bookmark(int offset) {
+        Offset = offset;
+        Size = 0;
+    }
+
     public static int  operator +(Bookmark a, int b) => a.Offset + b;
     public static uint operator +(Bookmark a, uint b) => (uint) a.Offset + b;
     public static int  operator -(Bookmark a, int b) => a.Offset - b;
