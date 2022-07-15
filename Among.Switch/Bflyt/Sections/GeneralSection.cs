@@ -1,10 +1,12 @@
-﻿using Among.Switch.Buffers;
+﻿using System.Text;
+using Among.Switch.Buffers;
+using Among.Switch.Util;
 
 namespace Among.Switch.Bflyt.Sections;
 
 [LayoutSection("lyt1")]
 public class GeneralLayoutSection : ILayoutSection {
-    public int Size => 0;
+    public string SectionName { get; set; }
     public bool Centered { get; set; }
     public float Width { get; set; }
     public float Height { get; set; }
@@ -22,13 +24,15 @@ public class GeneralLayoutSection : ILayoutSection {
         LayoutName = slice.ReadStringNull();
     }
 
-    public void Save(SpanBuffer slice) {
-        slice.WriteU8((byte) (Centered ? 1 : 0));
-        slice.WriteRepeatedU8(0, 3);
-        slice.WriteF32(Width);
-        slice.WriteF32(Height);
-        slice.WriteF32(UnknownParts1);
-        slice.WriteF32(UnknownParts2);
-        slice.WriteStringNull(LayoutName);
+    public SpanBuffer Save(bool bigEndian) {
+        SpanBuffer buffer = new SpanBuffer(new byte[(20 + Encoding.UTF8.GetByteCount(LayoutName) + 1).AlignInt(0b11)], bigEndian);
+        buffer.WriteU8((byte) (Centered ? 1 : 0));
+        buffer.WriteRepeatedU8(0, 3);
+        buffer.WriteF32(Width);
+        buffer.WriteF32(Height);
+        buffer.WriteF32(UnknownParts1);
+        buffer.WriteF32(UnknownParts2);
+        buffer.WriteStringNull(LayoutName);
+        return buffer;
     }
 }

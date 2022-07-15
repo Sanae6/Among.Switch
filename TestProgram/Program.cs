@@ -5,7 +5,7 @@ using Among.Switch.Byml;
 using Newtonsoft.Json;
 
 switch (args[0]) {
-    case "extract": {
+    case "sarc": {
         SarcFile sarc = SarcFile.Load(File.ReadAllBytes(args[1]));
         string dirName = Path.GetFileName(args[1]) + "_Files";
         Directory.CreateDirectory(dirName);
@@ -21,16 +21,15 @@ switch (args[0]) {
     }
     case "byml": {
         BymlFile byml = BymlFile.Load(File.ReadAllBytes(args[1]));
-        Console.WriteLine(JsonConvert.SerializeObject(byml, Formatting.Indented));
-        // Console.WriteLine(byml.Dump(new DumpOptions {
-        //     DumpStyle = DumpStyle.CSharp,
-        //     MaxLevel = int.MaxValue
-        // }));
+        // Console.WriteLine(JsonConvert.SerializeObject(byml, Formatting.Indented));
+        File.WriteAllText("lastByml.json", JsonConvert.SerializeObject(byml, Formatting.Indented));
         break;
     }
     case "bflyt": {
         BflytFile bflyt = BflytFile.Load(File.ReadAllBytes(args[1]));
-        Console.WriteLine(JsonConvert.SerializeObject(bflyt));
+        // Console.WriteLine(JsonConvert.SerializeObject(bflyt, Formatting.Indented));
+        File.WriteAllText($"{Path.GetFileNameWithoutExtension(args[1])}.json", JsonConvert.SerializeObject(bflyt, Formatting.Indented));
+        File.WriteAllBytes(Path.GetFileName(args[1]) + ".p", bflyt.Save().Buffer.ToArray());
         break;
     }
 }

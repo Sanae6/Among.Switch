@@ -20,13 +20,38 @@ public class BflytFile {
         .ToDictionary(x => x.attr.AsciiName, x => x.type);
 
     public uint Version { get; set; }
+    public bool BigEndian { get; set; }
     public List<ILayoutSection> Sections { get; } = new List<ILayoutSection>();
+    public SpanBuffer Save() {
+        SpanBuffer buffer = new SpanBuffer(new byte[HeaderSize], BigEndian);
+        buffer.WriteString(FlytMagic);
+        buffer.WriteBom();
+        buffer.WriteU16(HeaderSize);
+        buffer.WriteU32(Version);
+        Bookmark fileSize = buffer.BookmarkLocation(4);
+        Console.WriteLine(Sections.Count);
+        buffer.WriteU16((ushort) Sections.Count);
+        foreach (ILayoutSection section in Sections) {
+            SpanBuffer sectionHeader = new SpanBuffer(new byte[8], BigEndian);
+            sectionHeader.WriteString(section.SectionName);
+            Bookmark sectionLen = sectionHeader.BookmarkLocation(4);
+            SpanBuffer sectionBuffer = section.Save(BigEndian);
+            sectionLen.Toggle(ref sectionHeader);
+            sectionHeader.WriteU32((uint) (sectionBuffer.Size + 8));
+            buffer += sectionHeader;
+            buffer += sectionBuffer;
+        }
+        fileSize.Jump(ref buffer);
+        buffer.WriteI32(buffer.Size);
+        return buffer;
+    }
     public static BflytFile Load(Span<byte> data) {
         SpanBuffer buffer = new SpanBuffer(data);
         BflytFile file = new BflytFile();
         if (buffer.ReadString(4) != FlytMagic)
             throw new Exception("Buffer is not a valid BFLYT file");
         buffer.SetBom();
+        file.BigEndian = buffer.BigEndian;
 
         Console.WriteLine($"header size = {buffer.ReadU16()}");
 
@@ -41,10 +66,11 @@ public class BflytFile {
             Console.WriteLine($"At {sectionMagic} {SectionTypes.ContainsKey(sectionMagic)}");
             if (SectionTypes.TryGetValue(sectionMagic, out Type sectionType)) {
                 ILayoutSection layoutSection = (ILayoutSection) Activator.CreateInstance(sectionType);
+                layoutSection.SectionName = sectionMagic;
                 layoutSection.Load(new SpanBuffer(buffer.ReadBytes(sectionSize), buffer.BigEndian));
                 file.Sections.Add(layoutSection);
             } else {
-                UnknownLayoutSection uls = new UnknownLayoutSection(sectionMagic);
+                UnknownSection uls = new UnknownSection(sectionMagic);
                 uls.Load(new SpanBuffer(buffer.ReadBytes(sectionSize), buffer.BigEndian));
                 file.Sections.Add(uls);
             }

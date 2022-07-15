@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using Among.Switch.Util;
 
 namespace Among.Switch.Buffers; 
 
@@ -136,10 +137,17 @@ public ref struct SpanBuffer {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public T ReadStruct<T>() where T : struct, IReadableStructure {
         T structure = Activator.CreateInstance<T>();
-        int size = structure.Size;
-        structure.Load(new SpanBuffer(Slice(size), BigEndian));
-        Offset += size;
+        structure.Load(this);
         return structure;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public T Read<T>() where T : unmanaged {
+        int size = Unsafe.SizeOf<T>();
+        ThrowIfEndOfBuffer(size);
+        T t = MemoryMarshal.Read<T>(Buffer[Offset..]);
+        Offset += size;
+        return t;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -241,6 +249,20 @@ public ref struct SpanBuffer {
         WriteString(value + '\0');
     }
 
+    public void WriteStruct<T>(T value) where T : IReadableStructure {
+        SpanBuffer buffer = value.Save(BigEndian);
+        ThrowIfEndOfBuffer(buffer.Size);
+        buffer.Buffer.CopyTo(Slice(buffer.Size));
+        Offset += buffer.Size;
+    }
+
+    public void Write<T>(T value) where T : unmanaged {
+        int size = Unsafe.SizeOf<T>();
+        ThrowIfEndOfBuffer(size);
+        MemoryMarshal.Write(Slice(size), ref value);
+        Offset += size;
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetOffset(SeekOrigin origin, int location) {
         return (origin switch {
@@ -311,11 +333,8 @@ public ref struct SpanBuffer {
     public Span<byte> this[Range range] => Buffer[range];
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Bookmark GetBookmark(SeekOrigin origin, int location, int size = 0) {
-        return new Bookmark {
-            Offset = GetOffset(origin, location),
-            Size = size
-        };
+    public Bookmark GetBookmark(SeekOrigin origin, int location) {
+        return Bookmark.At(GetOffset(origin, location));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -331,15 +350,19 @@ public ref struct SpanBuffer {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Align4() {
-        while (Offset % 4 != 0) {
-            ThrowIfEndOfBuffer(1);
-            Offset++;
-        }
+        const int mask4 = 0b11;
+        int off = Offset.AlignInt(mask4);
+        ThrowIfEndOfBuffer(off - Offset);
+        Offset = off;
     }
 
     /// <remarks>Causes allocations unfortunately.</remarks>
     /// <remarks>Takes endianness from left parameter.</remarks>
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static SpanBuffer operator +(SpanBuffer a, SpanBuffer b) {
-        return new SpanBuffer(new byte[a.Size + b.Size], a.BigEndian);
+        SpanBuffer result = new SpanBuffer(new byte[a.Size + b.Size], a.BigEndian);
+        a.Buffer.CopyTo(result.Buffer[..a.Size]);
+        b.Buffer.CopyTo(result.Buffer[a.Size..]);
+        return result;
     }
 }

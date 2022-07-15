@@ -25,7 +25,17 @@ public class SarcFile {
         buffer.WriteString(SarcMagic);
         buffer.WriteU16(SarcHeaderSize);
         buffer.WriteBom();
-
+        Bookmark fileSizeBookmark = buffer.BookmarkLocation(4);
+        buffer.WriteU16(0x0100);
+        buffer.Offset += 2;
+        
+        //sfat
+        buffer.WriteString(SfatMagic);
+        buffer.WriteU16(SfatHeaderSize);
+        buffer.WriteU16((ushort) Files.Count);
+        buffer.WriteU32(HashKey);
+        
+        
 
         return buffer;
     }
@@ -87,7 +97,6 @@ public class SarcFile {
         public uint End;
 
         public const int NodeSize = 0x10;
-        public int Size => NodeSize;
         public void Load(SpanBuffer slice) {
             NameHash = slice.ReadU32();
             FileAttributes = slice.ReadU32();
@@ -95,11 +104,13 @@ public class SarcFile {
             End = slice.ReadU32();
         }
 
-        public void Save(SpanBuffer slice) {
-            slice.WriteU32(NameHash);
-            slice.WriteU32(FileAttributes);
-            slice.WriteU32(Start);
-            slice.WriteU32(End);
+        public SpanBuffer Save(bool bigEndian) {
+            SpanBuffer buffer = new SpanBuffer(new byte[16], bigEndian);
+            buffer.WriteU32(NameHash);
+            buffer.WriteU32(FileAttributes);
+            buffer.WriteU32(Start);
+            buffer.WriteU32(End);
+            return buffer;
         }
     }
 }
