@@ -11,7 +11,7 @@ namespace Among.Switch.Bflyt.Sections;
 public class FontRefSection : ILayoutSection {
     public string SectionName { get; set; }
     public List<string> Fonts = new List<string>();
-    public void Load(SpanBuffer slice) {
+    public void Load(ref SpanBuffer slice) {
         ushort textureCount = slice.ReadU16();
         slice.Offset += 2;
         Bookmark baseOffset = slice.BookmarkLocation(0);

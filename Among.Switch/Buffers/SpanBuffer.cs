@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Among.Switch.Util;
 
-namespace Among.Switch.Buffers; 
+namespace Among.Switch.Buffers;
 
 public ref struct SpanBuffer {
     public Span<byte> Buffer;
@@ -39,7 +39,9 @@ public ref struct SpanBuffer {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ushort ReadU16() {
         ThrowIfEndOfBuffer(sizeof(ushort));
-        ushort value = BigEndian ? BinaryPrimitives.ReadUInt16BigEndian(Buffer[Offset..]) : BinaryPrimitives.ReadUInt16LittleEndian(Buffer[Offset..]);
+        ushort value = BigEndian
+            ? BinaryPrimitives.ReadUInt16BigEndian(Buffer[Offset..])
+            : BinaryPrimitives.ReadUInt16LittleEndian(Buffer[Offset..]);
         Offset += sizeof(ushort);
         return value;
     }
@@ -47,14 +49,20 @@ public ref struct SpanBuffer {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public short ReadI16() {
         ThrowIfEndOfBuffer(sizeof(short));
-        short value = BigEndian ? BinaryPrimitives.ReadInt16BigEndian(Buffer[Offset..]) : BinaryPrimitives.ReadInt16LittleEndian(Buffer[Offset..]);
+        short value = BigEndian
+            ? BinaryPrimitives.ReadInt16BigEndian(Buffer[Offset..])
+            : BinaryPrimitives.ReadInt16LittleEndian(Buffer[Offset..]);
         Offset += sizeof(short);
         return value;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public uint ReadU24() {
-        return (uint) (BigEndian ? ReadU8() << 16 | ReadU8() << 8 | ReadU8() << 0 : ReadU8() << 0 | ReadU8() << 8 | ReadU8() << 16);
+        return (uint) (
+            BigEndian
+                ? ReadU8() << 16 | ReadU8() << 8 | ReadU8() << 0
+                : ReadU8() << 0 | ReadU8() << 8 | ReadU8() << 16
+        );
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -68,7 +76,9 @@ public ref struct SpanBuffer {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public uint ReadU32() {
         ThrowIfEndOfBuffer(sizeof(uint));
-        uint value = BigEndian ? BinaryPrimitives.ReadUInt32BigEndian(Buffer[Offset..]) : BinaryPrimitives.ReadUInt32LittleEndian(Buffer[Offset..]);
+        uint value = BigEndian
+            ? BinaryPrimitives.ReadUInt32BigEndian(Buffer[Offset..])
+            : BinaryPrimitives.ReadUInt32LittleEndian(Buffer[Offset..]);
         Offset += sizeof(uint);
         return value;
     }
@@ -76,7 +86,9 @@ public ref struct SpanBuffer {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int ReadI32() {
         ThrowIfEndOfBuffer(sizeof(int));
-        int value = BigEndian ? BinaryPrimitives.ReadInt32BigEndian(Buffer[Offset..]) : BinaryPrimitives.ReadInt32LittleEndian(Buffer[Offset..]);
+        int value = BigEndian
+            ? BinaryPrimitives.ReadInt32BigEndian(Buffer[Offset..])
+            : BinaryPrimitives.ReadInt32LittleEndian(Buffer[Offset..]);
         Offset += sizeof(int);
         return value;
     }
@@ -84,7 +96,9 @@ public ref struct SpanBuffer {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ulong ReadU64() {
         ThrowIfEndOfBuffer(sizeof(ulong));
-        ulong value = BigEndian ? BinaryPrimitives.ReadUInt64BigEndian(Buffer[Offset..]) : BinaryPrimitives.ReadUInt64LittleEndian(Buffer[Offset..]);
+        ulong value = BigEndian
+            ? BinaryPrimitives.ReadUInt64BigEndian(Buffer[Offset..])
+            : BinaryPrimitives.ReadUInt64LittleEndian(Buffer[Offset..]);
         Offset += sizeof(ulong);
         return value;
     }
@@ -92,7 +106,9 @@ public ref struct SpanBuffer {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public long ReadI64() {
         ThrowIfEndOfBuffer(sizeof(long));
-        long value = BigEndian ? BinaryPrimitives.ReadInt64BigEndian(Buffer[Offset..]) : BinaryPrimitives.ReadInt64LittleEndian(Buffer[Offset..]);
+        long value = BigEndian
+            ? BinaryPrimitives.ReadInt64BigEndian(Buffer[Offset..])
+            : BinaryPrimitives.ReadInt64LittleEndian(Buffer[Offset..]);
         Offset += sizeof(long);
         return value;
     }
@@ -137,7 +153,7 @@ public ref struct SpanBuffer {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public T ReadStruct<T>() where T : struct, IReadableStructure {
         T structure = Activator.CreateInstance<T>();
-        structure.Load(this);
+        structure.Load(ref this);
         return structure;
     }
 

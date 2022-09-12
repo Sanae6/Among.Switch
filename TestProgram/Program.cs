@@ -3,6 +3,7 @@ using Among.Switch;
 using Among.Switch.Bflyt;
 using Among.Switch.Byml;
 using Newtonsoft.Json;
+using TestProgram;
 
 switch (args[0]) {
     case "sarc": {
@@ -30,6 +31,11 @@ switch (args[0]) {
         // Console.WriteLine(JsonConvert.SerializeObject(bflyt, Formatting.Indented));
         File.WriteAllText($"{Path.GetFileNameWithoutExtension(args[1])}.json", JsonConvert.SerializeObject(bflyt, Formatting.Indented));
         File.WriteAllBytes(Path.GetFileName(args[1]) + ".p", bflyt.Save().Buffer.ToArray());
+        break;
+    }
+    case "odymap": {
+        MapDataExtractor mapDataExtractor = new MapDataExtractor();
+        mapDataExtractor.Load(args[1]);
         break;
     }
 }

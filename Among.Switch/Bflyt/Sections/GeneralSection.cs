@@ -14,7 +14,7 @@ public class GeneralLayoutSection : ILayoutSection {
     public float UnknownParts2 { get; set; }
     public string LayoutName { get; set; }
 
-    public void Load(SpanBuffer slice) {
+    public void Load(ref SpanBuffer slice) {
         Centered = slice.ReadU8() != 0;
         slice.Offset += 3;
         Width = slice.ReadF32();

@@ -50,7 +50,7 @@ public class BflytFile {
         BflytFile file = new BflytFile();
         if (buffer.ReadString(4) != FlytMagic)
             throw new Exception("Buffer is not a valid BFLYT file");
-        buffer.SetBom();
+        buffer.SetBomFe();
         file.BigEndian = buffer.BigEndian;
 
         Console.WriteLine($"header size = {buffer.ReadU16()}");
@@ -64,14 +64,15 @@ public class BflytFile {
             string sectionMagic = buffer.ReadString(4);
             int sectionSize = (int) (buffer.ReadU32() - 8);
             Console.WriteLine($"At {sectionMagic} {SectionTypes.ContainsKey(sectionMagic)}");
+            SpanBuffer sectionSlice = new SpanBuffer(buffer.ReadBytes(sectionSize), buffer.BigEndian);
             if (SectionTypes.TryGetValue(sectionMagic, out Type sectionType)) {
                 ILayoutSection layoutSection = (ILayoutSection) Activator.CreateInstance(sectionType);
                 layoutSection.SectionName = sectionMagic;
-                layoutSection.Load(new SpanBuffer(buffer.ReadBytes(sectionSize), buffer.BigEndian));
+                layoutSection.Load(ref sectionSlice);
                 file.Sections.Add(layoutSection);
             } else {
                 UnknownSection uls = new UnknownSection(sectionMagic);
-                uls.Load(new SpanBuffer(buffer.ReadBytes(sectionSize), buffer.BigEndian));
+                uls.Load(ref sectionSlice);
                 file.Sections.Add(uls);
             }
         }

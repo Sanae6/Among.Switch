@@ -11,7 +11,7 @@ public class UnknownSection : ILayoutSection {
         SectionName = sectionMagic;
     }
 
-    public void Load(SpanBuffer slice) {
+    public void Load(ref SpanBuffer slice) {
         Data = slice.Buffer.ToArray();
     }
 

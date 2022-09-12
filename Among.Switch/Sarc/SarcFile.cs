@@ -43,19 +43,22 @@ public class SarcFile {
     public static SarcFile Load(Span<byte> data) {
         SpanBuffer buffer = new SpanBuffer(data, true);
         SarcFile sarc = new SarcFile();
+        bool yaz = false;
         if (buffer.ReadString(4) != SarcMagic) {
             buffer = YazUtility.Decompress(data);
             File.WriteAllBytes("lol.sarc", buffer.Buffer.ToArray());
             buffer.BigEndian = true;
             if (buffer.ReadString(4) != SarcMagic) throw new Exception("Buffer is not valid (optionally Yaz0 compressed) SARC data");
+            yaz = true;
         }
 
         Bookmark headerStart = buffer.BookmarkLocation(sizeof(ushort));
-        buffer.SetBom();
+        buffer.SetBomFe();
 
         headerStart.Toggle(ref buffer);
-        if (buffer.ReadU16() != SarcHeaderSize)
-            throw new Exception($"SARC header length was not 0x{SarcHeaderSize:X}");
+        ushort headerSize = buffer.ReadU16();
+        if (headerSize != SarcHeaderSize)
+            throw new Exception($"SARC header length was not 0x{SarcHeaderSize:X}, got 0x{headerSize:X} (yaz0 archive: {yaz})");
         headerStart.Toggle(ref buffer);
         _ = buffer.ReadU32();
         Bookmark dataStart = new Bookmark((int) buffer.ReadU32());
@@ -97,7 +100,7 @@ public class SarcFile {
         public uint End;
 
         public const int NodeSize = 0x10;
-        public void Load(SpanBuffer slice) {
+        public void Load(ref SpanBuffer slice) {
             NameHash = slice.ReadU32();
             FileAttributes = slice.ReadU32();
             Start = slice.ReadU32();

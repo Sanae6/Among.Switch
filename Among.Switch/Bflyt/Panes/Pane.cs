@@ -17,7 +17,7 @@ public abstract class Pane : ILayoutSection {
     public Vector3 Rotation;
     public Vector2 Scale;
     public Vector2 Size;
-    public virtual void Load(SpanBuffer slice) {
+    public virtual void Load(ref SpanBuffer slice) {
         Visibility = (VisibilityFlags) slice.ReadU8();
         Origin = (OriginFlags) slice.ReadU8();
         Alpha = slice.ReadU8();

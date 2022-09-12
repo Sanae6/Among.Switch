@@ -45,14 +45,16 @@ public class BymlFile {
             // Debug.WriteLine($"Node {type} version {byml.Version}");
             switch (type, byml.Version) {
                 case (NodeTypes.StringIndex, >= 2):
-                    return new StringNode(byml.Strings.Children[buffer.ReadI32()]);
+                    StringNode stringNode = new StringNode(byml.Strings.Children[buffer.ReadU16()]);
+                    buffer.Offset += 2;
+                    return stringNode;
                 case (NodeTypes.BinaryData, >= 4):
                     throw new NotImplementedException("Binary data nodes are not yet supported.");
                 case (NodeTypes.Array, >= 2): {
                     ArrayNode node = new ArrayNode();
                     int len = buffer.ReadI24();
-                    Span<NodeTypes> types = MemoryMarshal.Cast<byte, NodeTypes>(buffer.ReadBytes(len));
                     buffer.Align4();
+                    Span<NodeTypes> types = MemoryMarshal.Cast<byte, NodeTypes>(buffer.ReadBytes(len));
                     for (int i = 0; i < len; i++) {
                         if (IsSpecialNode(types[i])) {
                             Bookmark temp = buffer.GetBookmark(SeekOrigin.Begin, (int) buffer.ReadU32());
